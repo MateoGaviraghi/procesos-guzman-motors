@@ -24,7 +24,7 @@ export default function App() {
   }, [])
 
   const handleCreateSave = useCallback(async (data: {
-    name: string; phone: string; product: string; responsible: string; contact_date: string | null; note: string
+    name: string; phone: string; product: string; responsible: import('./lib/types').Responsible; contact_date: string | null; note: string
   }) => {
     if (!createColumn) return
     const targetColumn = data.contact_date && isMoreThanOneMonth(data.contact_date)
