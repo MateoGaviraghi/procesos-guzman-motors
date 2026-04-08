@@ -34,8 +34,6 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [quoteDate, setQuoteDate] = useState(toInputDate(card.quote_date))
   const [note, setNote] = useState(card.note)
   const [confirmDelete, setConfirmDelete] = useState(false)
-
-  // Confirmacion generica
   const [confirmMsg, setConfirmMsg] = useState('')
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null)
 
@@ -45,52 +43,44 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
     onSave(updates)
   }, [onSave])
 
-  // Auto-save al salir del campo si cambio
   const handleBlur = (field: string, value: string, original: string) => {
     if (value.trim() !== original.trim() && value.trim()) {
       saveField({ [field]: value.trim() })
     }
   }
 
-  // Responsable con confirmacion
   const handleResponsibleClick = (r: Responsible) => {
     if (responsible === r) {
-      // Deseleccionar
       setConfirmMsg(`Quitar a ${r} como responsable?`)
-      setConfirmAction(() => () => {
-        setResponsible('')
-        saveField({ responsible: '' })
-      })
+      setConfirmAction(() => () => { setResponsible(''); saveField({ responsible: '' }) })
     } else if (responsible && responsible !== r) {
-      // Cambiar de uno a otro
       setConfirmMsg(`Cambiar responsable de ${responsible} a ${r}?`)
-      setConfirmAction(() => () => {
-        setResponsible(r)
-        saveField({ responsible: r })
-      })
+      setConfirmAction(() => () => { setResponsible(r); saveField({ responsible: r }) })
     } else {
-      // Asignar nuevo (sin confirmacion)
       setResponsible(r)
       saveField({ responsible: r })
     }
   }
 
-  // Nota con confirmacion al salir
   const handleNoteBlur = () => {
     if (note.trim() !== card.note.trim()) {
       setConfirmMsg('Guardar los cambios en la nota?')
-      setConfirmAction(() => () => {
-        saveField({ note: note.trim() })
-      })
+      setConfirmAction(() => () => { saveField({ note: note.trim() }) })
     }
   }
 
-  // Fechas auto-save
   const handleDateChange = (field: 'contact_date' | 'quote_date', value: string) => {
     if (field === 'contact_date') setContactDate(value)
     else setQuoteDate(value)
     saveField({ [field]: value || null })
   }
+
+  const inputClass = `w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
+    text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
+    focus:outline-none transition-all`
+
+  const dateInputClass = `w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
+    text-white focus:border-blue-400 focus:bg-white/15 focus:outline-none transition-all scheme-dark`
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -102,7 +92,7 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
                    animate-[slideIn_0.2s_ease-out]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="h-[4px] shrink-0" style={{ backgroundColor: color }} />
+        <div className="h-1 shrink-0" style={{ backgroundColor: color }} />
 
         {/* Header */}
         <div className="flex items-center justify-between px-7 py-4 border-b border-white/10">
@@ -115,7 +105,7 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
               <span className="text-[13px] text-white/40">Creada {formatDate(card.contact_date)}</span>
             )}
           </div>
-          <button onClick={onClose}
+          <button onClick={onClose} title="Cerrar"
             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-all">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -127,6 +117,8 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
         <div className="px-7 pt-6 pb-2">
           <input type="text" value={name} onChange={e => setName(e.target.value)}
             onBlur={() => handleBlur('name', name, card.name)}
+            placeholder="Nombre del cliente"
+            aria-label="Nombre del cliente"
             className="w-full text-[26px] font-bold text-white bg-transparent border-0 border-b-2 border-transparent
                        focus:border-b-blue-400 focus:outline-none px-0 py-1 transition-all placeholder:text-white/30" />
         </div>
@@ -139,7 +131,8 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
             <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Responsable</label>
             <div className="flex gap-2">
               {(['Hector', 'Victor'] as Responsible[]).map(r => (
-                <button key={r} type="button" onClick={() => handleResponsibleClick(r)}
+                <button key={r} type="button" title={`Asignar a ${r}`}
+                  onClick={() => handleResponsibleClick(r)}
                   className={`px-6 py-3 rounded-lg text-[16px] font-semibold transition-all duration-150
                     ${responsible === r
                       ? 'bg-blue-600 text-white shadow-md'
@@ -152,28 +145,22 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
 
           {/* Telefono */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
+            <label htmlFor="edit-phone" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
             <div className="relative">
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+              <input id="edit-phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)}
                 onBlur={() => handleBlur('phone', phone, card.phone)}
-                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
-                           text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
-                           focus:outline-none transition-all"
-                placeholder="Numero de telefono" />
+                className={inputClass} placeholder="Numero de telefono" />
               {phone && <ClearBtn onConfirm={() => { setPhone(''); saveField({ phone: '' }) }} dark />}
             </div>
           </div>
 
           {/* Producto */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Producto</label>
+            <label htmlFor="edit-product" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Producto</label>
             <div className="relative">
-              <input type="text" value={product} onChange={e => setProduct(e.target.value)}
+              <input id="edit-product" type="text" value={product} onChange={e => setProduct(e.target.value)}
                 onBlur={() => handleBlur('product', product, card.product)}
-                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
-                           text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
-                           focus:outline-none transition-all"
-                placeholder="Camion, remolque..." />
+                className={inputClass} placeholder="Camion, remolque..." />
               {product && <ClearBtn onConfirm={() => { setProduct(''); saveField({ product: '' }) }} dark />}
             </div>
           </div>
@@ -181,24 +168,22 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           {/* Fechas */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
+              <label htmlFor="edit-contact-date" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
               <div className="relative">
-                <input type="date" value={contactDate}
+                <input id="edit-contact-date" type="date" value={contactDate}
                   onChange={e => handleDateChange('contact_date', e.target.value)}
-                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
-                             text-white focus:border-blue-400 focus:bg-white/15 focus:outline-none transition-all
-                             [color-scheme:dark]" />
+                  title="Fecha de contacto"
+                  className={dateInputClass} />
                 {contactDate && <ClearBtn onConfirm={() => { setContactDate(''); saveField({ contact_date: null }) }} dark />}
               </div>
             </div>
             <div>
-              <label className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
+              <label htmlFor="edit-quote-date" className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
               <div className="relative">
-                <input type="date" value={quoteDate}
+                <input id="edit-quote-date" type="date" value={quoteDate}
                   onChange={e => handleDateChange('quote_date', e.target.value)}
-                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
-                             text-white focus:border-emerald-400 focus:bg-white/15 focus:outline-none transition-all
-                             [color-scheme:dark]" />
+                  title="Fecha de cotizacion"
+                  className={`${dateInputClass} focus:border-emerald-400`} />
                 {quoteDate && <ClearBtn onConfirm={() => { setQuoteDate(''); saveField({ quote_date: null }) }} dark />}
               </div>
             </div>
@@ -223,11 +208,10 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
 
           {/* Nota */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Nota</label>
+            <label htmlFor="edit-note" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Nota</label>
             <div className="relative">
-              <textarea value={note} onChange={e => setNote(e.target.value)}
-                onBlur={handleNoteBlur}
-                rows={3}
+              <textarea id="edit-note" value={note} onChange={e => setNote(e.target.value)}
+                onBlur={handleNoteBlur} rows={3}
                 className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[17px]
                            text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
                            focus:outline-none transition-all resize-none"
@@ -237,7 +221,7 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           </div>
         </div>
 
-        {/* Footer - solo Eliminar y Cerrar */}
+        {/* Footer */}
         <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-7 py-4 shrink-0">
           <div className="flex items-center gap-3">
             {!confirmDelete ? (
@@ -261,14 +245,10 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
         </div>
       </div>
 
-      {/* Alert de confirmacion */}
       {confirmMsg && confirmAction && (
-        <ConfirmAlert
-          message={confirmMsg}
-          dark
+        <ConfirmAlert message={confirmMsg} dark
           onConfirm={() => { confirmAction(); setConfirmMsg(''); setConfirmAction(null) }}
-          onCancel={() => { setConfirmMsg(''); setConfirmAction(null) }}
-        />
+          onCancel={() => { setConfirmMsg(''); setConfirmAction(null) }} />
       )}
 
       <style>{`
