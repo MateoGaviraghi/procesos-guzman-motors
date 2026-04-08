@@ -75,9 +75,12 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props
             <span className="text-[16px] text-slate-600">{card.phone}</span>
             <div className="flex items-center gap-1.5 shrink-0">
               {card.pdf_url && (
-                <span className="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold border border-orange-200">
-                  PDF
-                </span>
+                <a href={card.pdf_url} target="_blank" rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold border border-orange-200
+                             hover:bg-orange-200 transition-all">
+                  Ver PDF
+                </a>
               )}
               {/* Responsable clickeable */}
               <button onClick={toggleResponsible} title="Cambiar responsable"

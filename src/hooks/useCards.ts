@@ -121,7 +121,11 @@ export function useCards() {
     if (useSupabase) {
       const path = `quotes/${cardId}/${file.name}`
       const { error } = await supabase.storage.from('pdfs').upload(path, file, { upsert: true })
-      if (error) return null
+      if (error) {
+        console.error('Error subiendo PDF:', error.message)
+        alert('Error al subir el PDF. Verifica que el bucket "pdfs" exista en Supabase Storage.')
+        return null
+      }
       const { data } = supabase.storage.from('pdfs').getPublicUrl(path)
       return data.publicUrl
     }
