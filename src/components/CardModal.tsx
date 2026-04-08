@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { Card, ColumnStatus } from '../lib/types'
+import type { Card, ColumnStatus, Responsible } from '../lib/types'
 import { toInputDate, formatDate } from '../lib/dateUtils'
+import { ClearBtn } from './ClearBtn'
 
 interface Props {
   card: Card
@@ -9,122 +10,221 @@ interface Props {
   onClose: () => void
 }
 
-const accentMap: Record<ColumnStatus, string> = {
-  contactar: 'bg-blue-600',
-  cotizar: 'bg-amber-500',
-  seguimiento: 'bg-emerald-600',
-  remate: 'bg-red-600',
+const columnLabel: Record<ColumnStatus, string> = {
+  contactar: 'Contactar',
+  cotizar: 'Cotizar',
+  seguimiento: 'Seguimiento',
+  remate: 'Remate',
 }
+
+const columnColor: Record<ColumnStatus, string> = {
+  contactar: '#3b82f6',
+  cotizar: '#f59e0b',
+  seguimiento: '#10b981',
+  remate: '#f43f5e',
+}
+
 
 export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [name, setName] = useState(card.name)
   const [phone, setPhone] = useState(card.phone)
   const [product, setProduct] = useState(card.product)
+  const [responsible, setResponsible] = useState<Responsible>((card.responsible || '') as Responsible)
   const [contactDate, setContactDate] = useState(toInputDate(card.contact_date))
   const [quoteDate, setQuoteDate] = useState(toInputDate(card.quote_date))
   const [note, setNote] = useState(card.note)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const color = columnColor[card.column_status]
 
   const handleSave = () => {
     onSave({
       name: name.trim() || card.name,
       phone: phone.trim(),
       product: product.trim(),
+      responsible,
       contact_date: contactDate || null,
       quote_date: quoteDate || null,
       note: note.trim(),
     })
   }
 
-  const inputClass = `w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-[19px] text-black
-    focus:border-blue-500 focus:outline-none`
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-y-auto p-6"
-        onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex justify-end">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/25" onClick={onClose} />
 
-        <div className="flex items-center gap-2.5 mb-4">
-          <span className={`w-3.5 h-3.5 rounded-full ${accentMap[card.column_status]}`} />
-          <h2 className="text-xl font-black text-black">EDITAR TARJETA</h2>
-          <span className="text-[13px] text-gray-500 font-bold uppercase">{card.column_status}</span>
+      {/* Panel */}
+      <div
+        className="relative w-full max-w-[45vw] h-full bg-[#1a1a2e] text-white
+                   shadow-[-8px_0_30px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col
+                   animate-[slideIn_0.2s_ease-out]"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Top bar con color de columna */}
+        <div className="h-[4px] shrink-0" style={{ backgroundColor: color }} />
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-7 py-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <span className="text-[14px] font-semibold px-3 py-1 rounded-md"
+              style={{ backgroundColor: color + '20', color: color }}>
+              {columnLabel[card.column_status]}
+            </span>
+            {card.contact_date && (
+              <span className="text-[13px] text-white/40">Creada {formatDate(card.contact_date)}</span>
+            )}
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-all">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="space-y-3">
+        {/* Nombre editable grande */}
+        <div className="px-7 pt-6 pb-2">
+          <input type="text" value={name} onChange={e => setName(e.target.value)}
+            className="w-full text-[26px] font-bold text-white bg-transparent border-0 border-b-2 border-transparent
+                       focus:border-b-blue-400 focus:outline-none px-0 py-1 transition-all placeholder:text-white/30" />
+        </div>
+
+        {/* Campos */}
+        <div className="px-7 py-4 flex-1 space-y-4">
+
+          {/* Responsable */}
           <div>
-            <label className="block text-[16px] font-bold text-black mb-1">Nombre</label>
-            <input type="text" value={name} onChange={e => setName(e.target.value)}
-              className={`${inputClass} border-black`} />
+            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Responsable</label>
+            <div className="flex gap-2">
+              {(['Hector', 'Victor'] as Responsible[]).map(r => (
+                <button key={r} type="button" onClick={() => setResponsible(responsible === r ? '' : r)}
+                  className={`px-6 py-3 rounded-lg text-[16px] font-semibold transition-all duration-150
+                    ${responsible === r
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'}`}>
+                  {r}
+                </button>
+              ))}
+            </div>
           </div>
 
+          {/* Telefono */}
           <div>
-            <label className="block text-[16px] font-bold text-black mb-1">Telefono</label>
-            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              className={inputClass} />
+            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
+            <div className="relative">
+              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
+                           text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
+                           focus:outline-none transition-all"
+                placeholder="Numero de telefono" />
+              {phone && <ClearBtn onConfirm={() => setPhone('')} dark />}
+            </div>
           </div>
 
+          {/* Producto */}
           <div>
-            <label className="block text-[16px] font-bold text-black mb-1">Producto</label>
-            <input type="text" value={product} onChange={e => setProduct(e.target.value)}
-              className={inputClass} />
+            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Producto</label>
+            <div className="relative">
+              <input type="text" value={product} onChange={e => setProduct(e.target.value)}
+                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
+                           text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
+                           focus:outline-none transition-all"
+                placeholder="Camion, remolque..." />
+              {product && <ClearBtn onConfirm={() => setProduct('')} dark />}
+            </div>
           </div>
 
+          {/* Fechas en row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[16px] font-bold text-black mb-1">Fecha contacto</label>
-              <input type="date" value={contactDate} onChange={e => setContactDate(e.target.value)}
-                className={inputClass} />
+              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
+              <div className="relative">
+                <input type="date" value={contactDate} onChange={e => setContactDate(e.target.value)}
+                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
+                             text-white focus:border-blue-400 focus:bg-white/15 focus:outline-none transition-all
+                             [color-scheme:dark]" />
+                {contactDate && <ClearBtn onConfirm={() => setContactDate('')} dark />}
+              </div>
             </div>
             <div>
-              <label className="block text-[16px] font-bold text-emerald-700 mb-1">Fecha cotizacion</label>
-              <input type="date" value={quoteDate} onChange={e => setQuoteDate(e.target.value)}
-                className={inputClass} />
+              <label className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
+              <div className="relative">
+                <input type="date" value={quoteDate} onChange={e => setQuoteDate(e.target.value)}
+                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
+                             text-white focus:border-emerald-400 focus:bg-white/15 focus:outline-none transition-all
+                             [color-scheme:dark]" />
+                {quoteDate && <ClearBtn onConfirm={() => setQuoteDate('')} dark />}
+              </div>
             </div>
           </div>
 
+          {/* PDF */}
           {card.pdf_url && (
-            <a href={card.pdf_url} target="_blank" rel="noopener noreferrer"
-               className="inline-block text-[15px] text-red-600 font-bold underline">
-              Ver PDF de cotizacion
-            </a>
+            <div>
+              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Adjunto</label>
+              <a href={card.pdf_url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[15px] text-orange-400 font-semibold
+                           bg-orange-400/10 px-4 py-2.5 rounded-lg border border-orange-400/20
+                           hover:bg-orange-400/20 transition-all">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Ver PDF cotizacion
+              </a>
+            </div>
           )}
 
+          {/* Nota */}
           <div>
-            <label className="block text-[16px] font-bold text-black mb-1">
-              Nota <span className="text-[13px] font-normal text-gray-400">(opcional)</span>
-            </label>
-            <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
-              className={`${inputClass} resize-none`} placeholder="Nota interna..." />
+            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Nota</label>
+            <div className="relative">
+              <textarea value={note} onChange={e => setNote(e.target.value)} rows={3}
+                className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[17px]
+                           text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
+                           focus:outline-none transition-all resize-none"
+                placeholder="Agregar nota interna..." />
+              {note && <ClearBtn onConfirm={() => setNote('')} dark />}
+            </div>
           </div>
+        </div>
 
-          {card.contact_date && (
-            <p className="text-[12px] text-gray-400">Creada: {formatDate(card.contact_date)}</p>
-          )}
-
-          <div className="flex items-center gap-3 pt-2">
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-7 py-4 shrink-0">
+          <div className="flex items-center gap-3">
             {!confirmDelete ? (
               <button onClick={() => setConfirmDelete(true)}
-                className="py-3.5 px-5 rounded-lg border-2 border-red-500 text-red-600 font-bold text-[16px] hover:bg-red-50">
-                ELIMINAR
+                className="text-red-400 font-semibold text-[15px] hover:text-red-300 hover:bg-red-400/10 px-4 py-2.5 rounded-lg transition-all">
+                Eliminar
               </button>
             ) : (
               <button onClick={onDelete}
-                className="py-3.5 px-5 rounded-lg bg-red-600 text-white font-bold text-[16px] animate-pulse">
-                CONFIRMAR
+                className="bg-red-600 text-white font-semibold text-[15px] px-4 py-2.5 rounded-lg shadow-md animate-pulse">
+                Confirmar eliminar
               </button>
             )}
             <div className="flex-1" />
             <button onClick={onClose}
-              className="py-3.5 px-5 rounded-lg border-2 border-black text-black font-bold text-[16px] hover:bg-gray-100">
+              className="py-3 px-6 rounded-lg bg-white/10 text-white/70 font-semibold text-[16px]
+                         hover:bg-white/15 hover:text-white transition-all">
               Cancelar
             </button>
             <button onClick={handleSave}
-              className="py-3.5 px-5 rounded-lg bg-[#1e3a5f] text-white font-bold text-[16px] hover:bg-[#16304f]">
-              GUARDAR
+              className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold text-[16px]
+                         hover:bg-blue-500 transition-all active:scale-[0.98] shadow-md">
+              Guardar
             </button>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
     </div>
   )
 }

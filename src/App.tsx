@@ -24,7 +24,7 @@ export default function App() {
   }, [])
 
   const handleCreateSave = useCallback(async (data: {
-    name: string; phone: string; product: string; contact_date: string | null; note: string
+    name: string; phone: string; product: string; responsible: string; contact_date: string | null; note: string
   }) => {
     if (!createColumn) return
     const targetColumn = data.contact_date && isMoreThanOneMonth(data.contact_date)
@@ -79,14 +79,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
-        <p className="text-xl text-gray-500 font-bold">Cargando...</p>
+      <div className="h-full flex items-center justify-center bg-slate-50">
+        <p className="text-xl text-slate-400 font-medium">Cargando...</p>
       </div>
     )
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-100">
+    <div className="h-full flex flex-col bg-slate-50">
       <NavBar view={view} onViewChange={setView} agendaCount={agendaCount} />
 
       <div className="flex-1 overflow-hidden">

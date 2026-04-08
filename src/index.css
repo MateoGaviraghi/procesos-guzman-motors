@@ -4,26 +4,33 @@ html, body, #root {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
 }
 
-/* Scrollbar personalizado para columnas */
 .column-scroll::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
-
 .column-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .column-scroll::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+.column-scroll::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
-  border-radius: 4px;
 }
 
-.column-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-enter {
+  animation: modalIn 0.2s ease-out;
 }

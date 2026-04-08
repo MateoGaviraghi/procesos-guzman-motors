@@ -6,30 +6,31 @@ interface Props {
 
 export function NavBar({ view, onViewChange, agendaCount }: Props) {
   return (
-    <nav className="flex items-center justify-between bg-[#1e3a5f] px-6 py-3 shrink-0">
-      <h1 className="text-2xl font-black text-white tracking-wide">
-        GUZMAN MOTORS
+    <nav className="flex items-center justify-between bg-slate-900 px-6 py-2.5 shrink-0 shadow-lg">
+      <h1 className="text-[24px] font-bold text-white tracking-tight">
+        Guzman Motors
       </h1>
-      <div className="flex gap-2">
+
+      <div className="flex gap-1 bg-slate-800 rounded-lg p-1">
         <button
           onClick={() => onViewChange('main')}
-          className={`px-6 py-2.5 rounded-lg font-bold text-[15px] transition-colors border-2
+          className={`px-5 py-2 rounded-md font-semibold text-[15px] transition-all duration-150
             ${view === 'main'
-              ? 'bg-white text-[#1e3a5f] border-white'
-              : 'bg-transparent text-white border-white/40 hover:border-white'}`}
+              ? 'bg-white text-slate-900 shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
         >
-          PIZARRON
+          Pizarron
         </button>
         <button
           onClick={() => onViewChange('agenda')}
-          className={`px-6 py-2.5 rounded-lg font-bold text-[15px] transition-colors border-2 flex items-center gap-2
+          className={`px-5 py-2 rounded-md font-semibold text-[15px] transition-all duration-150 flex items-center gap-2
             ${view === 'agenda'
-              ? 'bg-white text-[#1e3a5f] border-white'
-              : 'bg-transparent text-white border-white/40 hover:border-white'}`}
+              ? 'bg-white text-slate-900 shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
         >
-          AGENDA
+          Agenda
           {agendaCount > 0 && (
-            <span className="min-w-[24px] h-6 px-1.5 rounded-full text-[12px] font-black bg-red-500 text-white flex items-center justify-center">
+            <span className="min-w-[22px] h-[22px] px-1.5 rounded-full text-[12px] font-bold bg-red-500 text-white flex items-center justify-center">
               {agendaCount}
             </span>
           )}

@@ -18,68 +18,89 @@ export function QuoteDateModal({ cardName, onConfirmDate, onConfirmPdf, onCancel
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onCancel}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
-        <h2 className="text-xl font-black text-black mb-1">PASAR A SEGUIMIENTO</h2>
-        <p className="text-[16px] text-black mb-5">
-          <span className="font-bold">{cardName}</span> — Se necesita fecha de cotizacion.
-        </p>
+      <div className="bg-[#1a1a2e] text-white rounded-2xl shadow-2xl w-full max-w-md modal-enter overflow-hidden"
+        onClick={e => e.stopPropagation()}>
 
-        {mode === 'choose' && (
-          <div className="space-y-3">
-            <button onClick={() => setMode('date')}
-              className="w-full py-4 px-5 rounded-lg border-2 border-emerald-500 bg-emerald-50
-                         text-left hover:bg-emerald-100 transition-colors">
-              <span className="text-[16px] font-bold text-black">Anotar fecha de cotizacion</span>
-              <span className="block text-[14px] text-gray-600 mt-0.5">Escribir la fecha manualmente</span>
-            </button>
-            <button onClick={() => setMode('pdf')}
-              className="w-full py-4 px-5 rounded-lg border-2 border-red-400 bg-red-50
-                         text-left hover:bg-red-100 transition-colors">
-              <span className="text-[16px] font-bold text-black">Cargar PDF de cotizacion</span>
-              <span className="block text-[14px] text-gray-600 mt-0.5">Subir archivo, la fecha se anota hoy</span>
-            </button>
-            <button onClick={onCancel}
-              className="w-full py-3 rounded-lg border-2 border-gray-300 text-black font-bold text-[15px] hover:bg-gray-100 mt-1">
-              Cancelar
-            </button>
-          </div>
-        )}
+        {/* Barra verde arriba */}
+        <div className="h-[4px] bg-emerald-500" />
 
-        {mode === 'date' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-[14px] font-bold text-black mb-1">Fecha de cotizacion</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} autoFocus
-                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-[16px] text-black focus:border-emerald-500 focus:outline-none" />
+        {/* Header */}
+        <div className="px-7 pt-5 pb-4">
+          <h2 className="text-[20px] font-bold text-white mb-1">Pasar a Seguimiento</h2>
+          <p className="text-[16px] text-white/50">
+            <span className="font-semibold text-white/80">{cardName}</span> — Fecha de cotizacion requerida
+          </p>
+        </div>
+
+        <div className="px-7 pb-6">
+          {mode === 'choose' && (
+            <div className="space-y-3">
+              <button onClick={() => setMode('date')}
+                className="w-full py-4 px-5 rounded-xl bg-white/10 border border-white/15 text-left
+                           hover:bg-white/15 hover:border-emerald-400/40 transition-all duration-150 group">
+                <span className="text-[17px] font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                  Anotar fecha de cotizacion
+                </span>
+                <span className="block text-[14px] text-white/40 mt-0.5">Escribir la fecha manualmente</span>
+              </button>
+              <button onClick={() => setMode('pdf')}
+                className="w-full py-4 px-5 rounded-xl bg-white/10 border border-white/15 text-left
+                           hover:bg-white/15 hover:border-orange-400/40 transition-all duration-150 group">
+                <span className="text-[17px] font-semibold text-white group-hover:text-orange-300 transition-colors">
+                  Cargar PDF de cotizacion
+                </span>
+                <span className="block text-[14px] text-white/40 mt-0.5">Subir archivo, la fecha se anota hoy</span>
+              </button>
+              <button onClick={onCancel}
+                className="w-full py-3 text-[15px] text-white/40 font-medium hover:text-white/70 transition-colors mt-2">
+                Cancelar
+              </button>
             </div>
-            <div className="flex gap-3">
+          )}
+
+          {mode === 'date' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha de cotizacion</label>
+                <input type="date" value={date} onChange={e => setDate(e.target.value)} autoFocus
+                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[18px]
+                             text-white focus:border-emerald-400 focus:bg-white/15 focus:outline-none transition-all
+                             [color-scheme:dark]" />
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => setMode('choose')}
+                  className="flex-1 py-3 rounded-lg bg-white/10 text-white/70 font-semibold text-[16px]
+                             hover:bg-white/15 hover:text-white transition-all">
+                  Atras
+                </button>
+                <button onClick={() => date && onConfirmDate(date)} disabled={!date}
+                  className="flex-1 py-3 rounded-lg bg-emerald-600 text-white font-semibold text-[16px]
+                             hover:bg-emerald-500 transition-all active:scale-[0.98] shadow-md disabled:opacity-30">
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {mode === 'pdf' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Seleccionar PDF</label>
+                <input type="file" accept=".pdf" onChange={handleFileChange}
+                  className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[15px] text-white
+                             file:mr-3 file:py-1.5 file:px-4 file:rounded-md file:border-0
+                             file:bg-orange-500 file:text-white file:font-semibold file:cursor-pointer
+                             hover:file:bg-orange-400 transition-all" />
+                <p className="text-[13px] text-white/40 mt-2">La fecha se anota como hoy automaticamente.</p>
+              </div>
               <button onClick={() => setMode('choose')}
-                className="flex-1 py-3 rounded-lg border-2 border-gray-300 text-black font-bold text-[15px] hover:bg-gray-100">
+                className="w-full py-3 rounded-lg bg-white/10 text-white/70 font-semibold text-[16px]
+                           hover:bg-white/15 hover:text-white transition-all">
                 Atras
               </button>
-              <button onClick={() => date && onConfirmDate(date)} disabled={!date}
-                className="flex-1 py-3 rounded-lg bg-emerald-600 text-white font-bold text-[15px]
-                           hover:bg-emerald-700 disabled:opacity-30">
-                CONFIRMAR
-              </button>
             </div>
-          </div>
-        )}
-
-        {mode === 'pdf' && (
-          <div className="space-y-4">
-            <input type="file" accept=".pdf" onChange={handleFileChange}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-[15px]
-                         file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                         file:bg-red-100 file:text-red-700 file:font-bold file:cursor-pointer
-                         hover:file:bg-red-200" />
-            <p className="text-[14px] text-gray-500">La fecha se anota como hoy automaticamente.</p>
-            <button onClick={() => setMode('choose')}
-              className="w-full py-3 rounded-lg border-2 border-gray-300 text-black font-bold text-[15px] hover:bg-gray-100">
-              Atras
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
