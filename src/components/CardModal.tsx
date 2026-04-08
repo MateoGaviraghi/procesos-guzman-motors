@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react'
 import type { Card, ColumnStatus, Responsible } from '../lib/types'
 import { toInputDate, formatDate } from '../lib/dateUtils'
 import { ClearBtn } from './ClearBtn'
-import { ConfirmAlert } from './ConfirmAlert'
 
 interface Props {
   card: Card
@@ -34,9 +33,6 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [quoteDate, setQuoteDate] = useState(toInputDate(card.quote_date))
   const [note, setNote] = useState(card.note)
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [confirmMsg, setConfirmMsg] = useState('')
-  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null)
-
   const color = columnColor[card.column_status]
 
   const saveField = useCallback((updates: Partial<Card>) => {
@@ -51,11 +47,8 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
 
   const handleResponsibleClick = (r: Responsible) => {
     if (responsible === r) {
-      setConfirmMsg(`Quitar a ${r} como responsable?`)
-      setConfirmAction(() => () => { setResponsible(''); saveField({ responsible: '' }) })
-    } else if (responsible && responsible !== r) {
-      setConfirmMsg(`Cambiar responsable de ${responsible} a ${r}?`)
-      setConfirmAction(() => () => { setResponsible(r); saveField({ responsible: r }) })
+      setResponsible('')
+      saveField({ responsible: '' })
     } else {
       setResponsible(r)
       saveField({ responsible: r })
@@ -64,8 +57,7 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
 
   const handleNoteBlur = () => {
     if (note.trim() !== card.note.trim()) {
-      setConfirmMsg('Guardar los cambios en la nota?')
-      setConfirmAction(() => () => { saveField({ note: note.trim() }) })
+      saveField({ note: note.trim() })
     }
   }
 
@@ -244,12 +236,6 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           </div>
         </div>
       </div>
-
-      {confirmMsg && confirmAction && (
-        <ConfirmAlert message={confirmMsg} dark
-          onConfirm={() => { confirmAction(); setConfirmMsg(''); setConfirmAction(null) }}
-          onCancel={() => { setConfirmMsg(''); setConfirmAction(null) }} />
-      )}
 
       <style>{`
         @keyframes slideIn {

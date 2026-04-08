@@ -97,6 +97,7 @@ export default function App() {
             onAddClick={handleAddClick}
             onMoveCard={moveCard}
             onDragToSeguimiento={handleDragToSeguimiento}
+            onQuickUpdate={(id, updates) => updateCard(id, updates)}
           />
         ) : (
           <AgendaBoard cards={cards} onCardClick={handleCardClick} />

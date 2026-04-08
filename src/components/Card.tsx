@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
-import type { Card as CardType, ColumnStatus } from '../lib/types'
+import type { Card as CardType, ColumnStatus, Responsible } from '../lib/types'
 import { formatDate, isExpired } from '../lib/dateUtils'
 
 interface Props {
@@ -7,12 +8,35 @@ interface Props {
   index: number
   accentColor: string
   onClick: () => void
+  onQuickUpdate: (id: string, updates: Partial<CardType>) => void
 }
 
 const expirableColumns: ColumnStatus[] = ['contactar', 'cotizar']
 
-export function Card({ card, index, accentColor, onClick }: Props) {
+export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props) {
   const expired = expirableColumns.includes(card.column_status) && isExpired(card.contact_date)
+  const [editingDate, setEditingDate] = useState(false)
+
+  const toggleResponsible = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const next: Responsible = card.responsible === 'Hector' ? 'Victor' : card.responsible === 'Victor' ? 'Hector' : 'Hector'
+    onQuickUpdate(card.id, { responsible: next })
+  }
+
+  const handleDateClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setEditingDate(true)
+  }
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    onQuickUpdate(card.id, { contact_date: e.target.value || null })
+    setEditingDate(false)
+  }
+
+  const handleDateBlur = () => {
+    setEditingDate(false)
+  }
 
   return (
     <Draggable draggableId={card.id} index={index}>
@@ -34,6 +58,7 @@ export function Card({ card, index, accentColor, onClick }: Props) {
             ${snapshot.isDragging ? 'shadow-[0_8px_25px_rgba(0,0,0,0.2)] rotate-[1.5deg] scale-[1.02]' : ''}
           `}
         >
+          {/* Row 1: Nombre + Vencida */}
           <div className="flex items-start justify-between gap-2">
             <p className="text-[18px] font-bold text-slate-900 leading-snug truncate flex-1">
               {card.name}
@@ -44,6 +69,8 @@ export function Card({ card, index, accentColor, onClick }: Props) {
               </span>
             )}
           </div>
+
+          {/* Row 2: Telefono + badges */}
           <div className="flex items-center justify-between mt-1">
             <span className="text-[16px] text-slate-600">{card.phone}</span>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -52,19 +79,41 @@ export function Card({ card, index, accentColor, onClick }: Props) {
                   PDF
                 </span>
               )}
-              {card.responsible && (
-                <span className="text-[12px] bg-slate-800 text-white px-2.5 py-0.5 rounded-full font-semibold">
-                  {card.responsible}
-                </span>
-              )}
+              {/* Responsable clickeable */}
+              <button onClick={toggleResponsible} title="Cambiar responsable"
+                className={`text-[12px] px-2.5 py-0.5 rounded-full font-semibold transition-all
+                  ${card.responsible
+                    ? 'bg-slate-800 text-white hover:bg-slate-700'
+                    : 'bg-slate-200 text-slate-500 hover:bg-slate-300'}`}>
+                {card.responsible || '?'}
+              </button>
             </div>
           </div>
+
+          {/* Row 3: Producto + Fecha */}
           <div className="flex items-end justify-between mt-1">
             <span className="text-[16px] text-slate-600 truncate">{card.product}</span>
-            <span className={`text-[15px] font-semibold shrink-0 ml-3 ${expired ? 'text-red-500' : 'text-slate-500'}`}>
-              {card.contact_date ? formatDate(card.contact_date) : ''}
-            </span>
+            {editingDate ? (
+              <input
+                type="date"
+                defaultValue={card.contact_date?.substring(0, 10) || ''}
+                onChange={handleDateChange}
+                onBlur={handleDateBlur}
+                onClick={e => e.stopPropagation()}
+                autoFocus
+                className="text-[14px] border border-slate-300 rounded px-2 py-1 w-[140px] shrink-0 ml-2
+                           focus:border-blue-400 focus:outline-none"
+              />
+            ) : (
+              <button onClick={handleDateClick} title="Cambiar fecha"
+                className={`text-[15px] font-semibold shrink-0 ml-3 hover:underline transition-all
+                  ${expired ? 'text-red-500' : card.contact_date ? 'text-slate-500' : 'text-slate-400 italic'}`}>
+                {card.contact_date ? formatDate(card.contact_date) : 'Sin fecha'}
+              </button>
+            )}
           </div>
+
+          {/* Row 4: Cotizacion */}
           {card.quote_date && (
             <p className="text-[14px] text-emerald-600 font-semibold text-right mt-0.5">
               Cotizacion: {formatDate(card.quote_date)}

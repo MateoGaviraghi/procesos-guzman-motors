@@ -12,9 +12,10 @@ interface Props {
   cards: CardType[]
   onCardClick: (card: CardType) => void
   onAddClick: () => void
+  onQuickUpdate: (id: string, updates: Partial<CardType>) => void
 }
 
-export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, onCardClick, onAddClick }: Props) {
+export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, onCardClick, onAddClick, onQuickUpdate }: Props) {
   return (
     <div className={`flex flex-col min-w-0 flex-1 h-full border-r border-slate-300 last:border-r-0 border-t-[3px] ${accentBorder}`}>
       {/* Header con fondo de color suave */}
@@ -55,6 +56,7 @@ export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, 
                 index={index}
                 accentColor={hex}
                 onClick={() => onCardClick(card)}
+                onQuickUpdate={onQuickUpdate}
               />
             ))}
             {provided.placeholder}

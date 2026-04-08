@@ -10,9 +10,10 @@ interface Props {
   onAddClick: (column: ColumnStatus) => void
   onMoveCard: (cardId: string, newColumn: ColumnStatus, newIndex: number) => void
   onDragToSeguimiento: (cardId: string, newIndex: number) => void
+  onQuickUpdate: (id: string, updates: Partial<CardType>) => void
 }
 
-export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento }: Props) {
+export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento, onQuickUpdate }: Props) {
   const mainCards = cards.filter(c => isWithinOneMonth(c.contact_date))
 
   const getColumnCards = (columnId: ColumnStatus) => {
@@ -51,6 +52,7 @@ export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSegu
             cards={getColumnCards(col.id)}
             onCardClick={onCardClick}
             onAddClick={() => onAddClick(col.id)}
+            onQuickUpdate={onQuickUpdate}
           />
         ))}
       </div>
