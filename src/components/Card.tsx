@@ -26,23 +26,27 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props
 
   const handleDateClick = (e: React.MouseEvent) => {
     e.stopPropagation()
+    setTempDate(card.contact_date?.substring(0, 10) || '')
     setEditingDate(true)
   }
 
-  const handleDateBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    if (val && val.length === 10 && val !== (card.contact_date?.substring(0, 10) || '')) {
-      onQuickUpdate(card.id, { contact_date: val })
+  const [tempDate, setTempDate] = useState('')
+  const [tempQuoteDate, setTempQuoteDate] = useState('')
+
+  const confirmDate = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (tempDate && tempDate.length === 10) {
+      onQuickUpdate(card.id, { contact_date: tempDate })
     }
     setEditingDate(false)
   }
 
-  const handleDateKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      (e.target as HTMLInputElement).blur()
-    } else if (e.key === 'Escape') {
-      setEditingDate(false)
+  const confirmQuoteDate = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (tempQuoteDate && tempQuoteDate.length === 10) {
+      onQuickUpdate(card.id, { quote_date: tempQuoteDate })
     }
+    setEditingQuoteDate(false)
   }
 
   return (
@@ -104,16 +108,24 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props
           <div className="flex items-end justify-between mt-1">
             <span className="text-[16px] text-slate-600 truncate">{card.product}</span>
             {editingDate ? (
-              <input
-                type="date"
-                defaultValue={card.contact_date?.substring(0, 10) || ''}
-                onBlur={handleDateBlur}
-                onKeyDown={handleDateKeyDown}
-                onClick={e => e.stopPropagation()}
-                autoFocus
-                className="text-[14px] border border-slate-300 rounded px-2 py-1 w-[140px] shrink-0 ml-2
-                           focus:border-blue-400 focus:outline-none"
-              />
+              <div className="flex items-center gap-1 shrink-0 ml-2" onClick={e => e.stopPropagation()}>
+                <input
+                  type="date"
+                  defaultValue={card.contact_date?.substring(0, 10) || ''}
+                  onChange={e => setTempDate(e.target.value)}
+                  autoFocus
+                  className="text-[14px] border border-slate-300 rounded px-2 py-1 w-[140px]
+                             focus:border-blue-400 focus:outline-none"
+                />
+                <button onClick={confirmDate} title="Confirmar"
+                  className="w-7 h-7 flex items-center justify-center rounded bg-blue-500 text-white hover:bg-blue-600 transition-all text-[14px] font-bold">
+                  ✓
+                </button>
+                <button onClick={e => { e.stopPropagation(); setEditingDate(false) }} title="Cancelar"
+                  className="w-7 h-7 flex items-center justify-center rounded bg-slate-200 text-slate-500 hover:bg-slate-300 transition-all text-[14px]">
+                  ✕
+                </button>
+              </div>
             ) : (
               <button onClick={handleDateClick} title="Cambiar fecha"
                 className={`text-[15px] font-semibold shrink-0 ml-3 hover:underline transition-all
@@ -127,25 +139,24 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props
           {(card.column_status === 'seguimiento' || card.column_status === 'remate') && (
             <div className="flex justify-end mt-0.5">
               {editingQuoteDate ? (
-                <input
-                  type="date"
-                  defaultValue={card.quote_date?.substring(0, 10) || ''}
-                  onBlur={e => {
-                    const val = e.target.value
-                    if (val && val.length === 10 && val !== (card.quote_date?.substring(0, 10) || '')) {
-                      onQuickUpdate(card.id, { quote_date: val })
-                    }
-                    setEditingQuoteDate(false)
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
-                    else if (e.key === 'Escape') setEditingQuoteDate(false)
-                  }}
-                  onClick={e => e.stopPropagation()}
-                  autoFocus
-                  className="text-[14px] border border-emerald-300 rounded px-2 py-1 w-[140px]
-                             focus:border-emerald-400 focus:outline-none"
-                />
+                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="date"
+                    defaultValue={card.quote_date?.substring(0, 10) || ''}
+                    onChange={e => setTempQuoteDate(e.target.value)}
+                    autoFocus
+                    className="text-[14px] border border-emerald-300 rounded px-2 py-1 w-[140px]
+                               focus:border-emerald-400 focus:outline-none"
+                  />
+                  <button onClick={confirmQuoteDate} title="Confirmar"
+                    className="w-7 h-7 flex items-center justify-center rounded bg-emerald-500 text-white hover:bg-emerald-600 transition-all text-[14px] font-bold">
+                    ✓
+                  </button>
+                  <button onClick={e => { e.stopPropagation(); setEditingQuoteDate(false) }} title="Cancelar"
+                    className="w-7 h-7 flex items-center justify-center rounded bg-slate-200 text-slate-500 hover:bg-slate-300 transition-all text-[14px]">
+                    ✕
+                  </button>
+                </div>
               ) : (
                 <button onClick={e => { e.stopPropagation(); setEditingQuoteDate(true) }} title="Cambiar fecha cotizacion"
                   className={`text-[14px] font-semibold hover:underline transition-all
