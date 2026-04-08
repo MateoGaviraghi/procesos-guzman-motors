@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import type { Card, ColumnStatus, Responsible } from '../lib/types'
 import { toInputDate, formatDate } from '../lib/dateUtils'
 import { ClearBtn } from './ClearBtn'
+import { DatePickerField } from './DatePickerField'
 
 interface Props {
   card: Card
@@ -33,6 +34,8 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [quoteDate, setQuoteDate] = useState(toInputDate(card.quote_date))
   const [note, setNote] = useState(card.note)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showContactPicker, setShowContactPicker] = useState(false)
+  const [showQuotePicker, setShowQuotePicker] = useState(false)
   const color = columnColor[card.column_status]
 
   const saveField = useCallback((updates: Partial<Card>) => {
@@ -160,24 +163,36 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           {/* Fechas */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="edit-contact-date" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
-              <div className="relative">
-                <input id="edit-contact-date" type="date" value={contactDate}
-                  onChange={e => handleDateChange('contact_date', e.target.value)}
-                  title="Fecha de contacto"
-                  className={dateInputClass} />
-                {contactDate && <ClearBtn onConfirm={() => { setContactDate(''); saveField({ contact_date: null }) }} dark />}
-              </div>
+              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
+              <button type="button" onClick={() => setShowContactPicker(true)}
+                className={`w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left
+                           hover:bg-white/15 transition-all
+                           ${contactDate ? 'text-white' : 'text-white/30'}`}>
+                {contactDate ? formatDate(contactDate) : 'Seleccionar'}
+              </button>
+              {showContactPicker && (
+                <DatePickerField
+                  value={contactDate || null}
+                  onChange={date => { setContactDate(date || ''); saveField({ contact_date: date }); setShowContactPicker(false) }}
+                  onClose={() => setShowContactPicker(false)}
+                />
+              )}
             </div>
             <div>
-              <label htmlFor="edit-quote-date" className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
-              <div className="relative">
-                <input id="edit-quote-date" type="date" value={quoteDate}
-                  onChange={e => handleDateChange('quote_date', e.target.value)}
-                  title="Fecha de cotizacion"
-                  className={`${dateInputClass} focus:border-emerald-400`} />
-                {quoteDate && <ClearBtn onConfirm={() => { setQuoteDate(''); saveField({ quote_date: null }) }} dark />}
-              </div>
+              <label className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
+              <button type="button" onClick={() => setShowQuotePicker(true)}
+                className={`w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left
+                           hover:bg-white/15 transition-all
+                           ${quoteDate ? 'text-white' : 'text-white/30'}`}>
+                {quoteDate ? formatDate(quoteDate) : 'Seleccionar'}
+              </button>
+              {showQuotePicker && (
+                <DatePickerField
+                  value={quoteDate || null}
+                  onChange={date => { setQuoteDate(date || ''); saveField({ quote_date: date }); setShowQuotePicker(false) }}
+                  onClose={() => setShowQuotePicker(false)}
+                />
+              )}
             </div>
           </div>
 

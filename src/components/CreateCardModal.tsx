@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { ColumnStatus, Responsible } from '../lib/types'
 import { ClearBtn } from './ClearBtn'
+import { DatePickerField } from './DatePickerField'
+import { formatDate } from '../lib/dateUtils'
 
 interface Props {
   column: ColumnStatus
@@ -21,7 +23,8 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
   const [phone, setPhone] = useState('')
   const [product, setProduct] = useState('')
   const [responsible, setResponsible] = useState<Responsible>('')
-  const [contactDate, setContactDate] = useState('')
+  const [contactDate, setContactDate] = useState<string | null>(null)
+  const [showDatePicker, setShowDatePicker] = useState(false)
   const [note, setNote] = useState('')
 
   const color = columnColor[column]
@@ -34,7 +37,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
       phone: phone.trim(),
       product: product.trim(),
       responsible,
-      contact_date: contactDate || null,
+      contact_date: contactDate,
       note: note.trim(),
     })
   }
@@ -113,11 +116,19 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
               <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
                 Fecha contacto
               </label>
-              <div className="relative">
-                <input type="date" value={contactDate} onChange={e => setContactDate(e.target.value)}
-                  className={`${inputClass} [color-scheme:dark]`} />
-                {contactDate && <ClearBtn dark onConfirm={() => setContactDate('')} />}
-              </div>
+              <button type="button" onClick={() => setShowDatePicker(true)}
+                className={`w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3.5 text-[18px] text-left
+                           hover:bg-white/15 transition-all
+                           ${contactDate ? 'text-white' : 'text-white/30'}`}>
+                {contactDate ? formatDate(contactDate) : 'Seleccionar fecha'}
+              </button>
+              {showDatePicker && (
+                <DatePickerField
+                  value={contactDate}
+                  onChange={date => { setContactDate(date); setShowDatePicker(false) }}
+                  onClose={() => setShowDatePicker(false)}
+                />
+              )}
             </div>
           </div>
 
