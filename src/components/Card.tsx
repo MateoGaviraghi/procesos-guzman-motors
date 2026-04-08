@@ -16,6 +16,7 @@ const expirableColumns: ColumnStatus[] = ['contactar', 'cotizar']
 export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props) {
   const expired = expirableColumns.includes(card.column_status) && isExpired(card.contact_date)
   const [editingDate, setEditingDate] = useState(false)
+  const [editingQuoteDate, setEditingQuoteDate] = useState(false)
 
   const toggleResponsible = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -116,11 +117,28 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate }: Props
             )}
           </div>
 
-          {/* Row 4: Cotizacion */}
-          {card.quote_date && (
-            <p className="text-[14px] text-emerald-600 font-semibold text-right mt-0.5">
-              Cotizacion: {formatDate(card.quote_date)}
-            </p>
+          {/* Row 4: Cotizacion - solo en seguimiento y remate */}
+          {(card.column_status === 'seguimiento' || card.column_status === 'remate') && (
+            <div className="flex justify-end mt-0.5">
+              {editingQuoteDate ? (
+                <input
+                  type="date"
+                  defaultValue={card.quote_date?.substring(0, 10) || ''}
+                  onChange={e => { e.stopPropagation(); onQuickUpdate(card.id, { quote_date: e.target.value || null }); setEditingQuoteDate(false) }}
+                  onBlur={() => setEditingQuoteDate(false)}
+                  onClick={e => e.stopPropagation()}
+                  autoFocus
+                  className="text-[14px] border border-emerald-300 rounded px-2 py-1 w-[140px]
+                             focus:border-emerald-400 focus:outline-none"
+                />
+              ) : (
+                <button onClick={e => { e.stopPropagation(); setEditingQuoteDate(true) }} title="Cambiar fecha cotizacion"
+                  className={`text-[14px] font-semibold hover:underline transition-all
+                    ${card.quote_date ? 'text-emerald-600' : 'text-emerald-400/60 italic'}`}>
+                  {card.quote_date ? `Cotizacion: ${formatDate(card.quote_date)}` : '+ Cotizacion'}
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}
