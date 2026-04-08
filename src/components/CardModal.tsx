@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import type { Card, ColumnStatus, Responsible } from '../lib/types'
 import { toInputDate, formatDate } from '../lib/dateUtils'
 import { ClearBtn } from './ClearBtn'
+import { ConfirmAlert } from './ConfirmAlert'
 
 interface Props {
   card: Card
@@ -24,7 +25,6 @@ const columnColor: Record<ColumnStatus, string> = {
   remate: '#f43f5e',
 }
 
-
 export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [name, setName] = useState(card.name)
   const [phone, setPhone] = useState(card.phone)
@@ -35,33 +35,73 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
   const [note, setNote] = useState(card.note)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
+  // Confirmacion generica
+  const [confirmMsg, setConfirmMsg] = useState('')
+  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null)
+
   const color = columnColor[card.column_status]
 
-  const handleSave = () => {
-    onSave({
-      name: name.trim() || card.name,
-      phone: phone.trim(),
-      product: product.trim(),
-      responsible,
-      contact_date: contactDate || null,
-      quote_date: quoteDate || null,
-      note: note.trim(),
-    })
+  const saveField = useCallback((updates: Partial<Card>) => {
+    onSave(updates)
+  }, [onSave])
+
+  // Auto-save al salir del campo si cambio
+  const handleBlur = (field: string, value: string, original: string) => {
+    if (value.trim() !== original.trim() && value.trim()) {
+      saveField({ [field]: value.trim() })
+    }
+  }
+
+  // Responsable con confirmacion
+  const handleResponsibleClick = (r: Responsible) => {
+    if (responsible === r) {
+      // Deseleccionar
+      setConfirmMsg(`Quitar a ${r} como responsable?`)
+      setConfirmAction(() => () => {
+        setResponsible('')
+        saveField({ responsible: '' })
+      })
+    } else if (responsible && responsible !== r) {
+      // Cambiar de uno a otro
+      setConfirmMsg(`Cambiar responsable de ${responsible} a ${r}?`)
+      setConfirmAction(() => () => {
+        setResponsible(r)
+        saveField({ responsible: r })
+      })
+    } else {
+      // Asignar nuevo (sin confirmacion)
+      setResponsible(r)
+      saveField({ responsible: r })
+    }
+  }
+
+  // Nota con confirmacion al salir
+  const handleNoteBlur = () => {
+    if (note.trim() !== card.note.trim()) {
+      setConfirmMsg('Guardar los cambios en la nota?')
+      setConfirmAction(() => () => {
+        saveField({ note: note.trim() })
+      })
+    }
+  }
+
+  // Fechas auto-save
+  const handleDateChange = (field: 'contact_date' | 'quote_date', value: string) => {
+    if (field === 'contact_date') setContactDate(value)
+    else setQuoteDate(value)
+    saveField({ [field]: value || null })
   }
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/25" onClick={onClose} />
 
-      {/* Panel */}
       <div
         className="relative w-full max-w-[45vw] h-full bg-[#1a1a2e] text-white
                    shadow-[-8px_0_30px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col
                    animate-[slideIn_0.2s_ease-out]"
         onClick={e => e.stopPropagation()}
       >
-        {/* Top bar con color de columna */}
         <div className="h-[4px] shrink-0" style={{ backgroundColor: color }} />
 
         {/* Header */}
@@ -83,9 +123,10 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           </button>
         </div>
 
-        {/* Nombre editable grande */}
+        {/* Nombre */}
         <div className="px-7 pt-6 pb-2">
           <input type="text" value={name} onChange={e => setName(e.target.value)}
+            onBlur={() => handleBlur('name', name, card.name)}
             className="w-full text-[26px] font-bold text-white bg-transparent border-0 border-b-2 border-transparent
                        focus:border-b-blue-400 focus:outline-none px-0 py-1 transition-all placeholder:text-white/30" />
         </div>
@@ -98,7 +139,7 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
             <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Responsable</label>
             <div className="flex gap-2">
               {(['Hector', 'Victor'] as Responsible[]).map(r => (
-                <button key={r} type="button" onClick={() => setResponsible(responsible === r ? '' : r)}
+                <button key={r} type="button" onClick={() => handleResponsibleClick(r)}
                   className={`px-6 py-3 rounded-lg text-[16px] font-semibold transition-all duration-150
                     ${responsible === r
                       ? 'bg-blue-600 text-white shadow-md'
@@ -114,11 +155,12 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
             <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
             <div className="relative">
               <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                onBlur={() => handleBlur('phone', phone, card.phone)}
                 className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
                            text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
                            focus:outline-none transition-all"
                 placeholder="Numero de telefono" />
-              {phone && <ClearBtn onConfirm={() => setPhone('')} dark />}
+              {phone && <ClearBtn onConfirm={() => { setPhone(''); saveField({ phone: '' }) }} dark />}
             </div>
           </div>
 
@@ -127,34 +169,37 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
             <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Producto</label>
             <div className="relative">
               <input type="text" value={product} onChange={e => setProduct(e.target.value)}
+                onBlur={() => handleBlur('product', product, card.product)}
                 className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[18px]
                            text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
                            focus:outline-none transition-all"
                 placeholder="Camion, remolque..." />
-              {product && <ClearBtn onConfirm={() => setProduct('')} dark />}
+              {product && <ClearBtn onConfirm={() => { setProduct(''); saveField({ product: '' }) }} dark />}
             </div>
           </div>
 
-          {/* Fechas en row */}
+          {/* Fechas */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
               <div className="relative">
-                <input type="date" value={contactDate} onChange={e => setContactDate(e.target.value)}
+                <input type="date" value={contactDate}
+                  onChange={e => handleDateChange('contact_date', e.target.value)}
                   className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
                              text-white focus:border-blue-400 focus:bg-white/15 focus:outline-none transition-all
                              [color-scheme:dark]" />
-                {contactDate && <ClearBtn onConfirm={() => setContactDate('')} dark />}
+                {contactDate && <ClearBtn onConfirm={() => { setContactDate(''); saveField({ contact_date: null }) }} dark />}
               </div>
             </div>
             <div>
               <label className="block text-[14px] font-semibold text-emerald-400 mb-2 uppercase tracking-wider">Cotizacion</label>
               <div className="relative">
-                <input type="date" value={quoteDate} onChange={e => setQuoteDate(e.target.value)}
+                <input type="date" value={quoteDate}
+                  onChange={e => handleDateChange('quote_date', e.target.value)}
                   className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-10 text-[16px]
                              text-white focus:border-emerald-400 focus:bg-white/15 focus:outline-none transition-all
                              [color-scheme:dark]" />
-                {quoteDate && <ClearBtn onConfirm={() => setQuoteDate('')} dark />}
+                {quoteDate && <ClearBtn onConfirm={() => { setQuoteDate(''); saveField({ quote_date: null }) }} dark />}
               </div>
             </div>
           </div>
@@ -180,23 +225,25 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
           <div>
             <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Nota</label>
             <div className="relative">
-              <textarea value={note} onChange={e => setNote(e.target.value)} rows={3}
+              <textarea value={note} onChange={e => setNote(e.target.value)}
+                onBlur={handleNoteBlur}
+                rows={3}
                 className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[17px]
                            text-white placeholder:text-white/30 focus:border-blue-400 focus:bg-white/15
                            focus:outline-none transition-all resize-none"
                 placeholder="Agregar nota interna..." />
-              {note && <ClearBtn onConfirm={() => setNote('')} dark />}
+              {note && <ClearBtn onConfirm={() => { setNote(''); saveField({ note: '' }) }} dark />}
             </div>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer - solo Eliminar y Cerrar */}
         <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-7 py-4 shrink-0">
           <div className="flex items-center gap-3">
             {!confirmDelete ? (
               <button onClick={() => setConfirmDelete(true)}
                 className="text-red-400 font-semibold text-[15px] hover:text-red-300 hover:bg-red-400/10 px-4 py-2.5 rounded-lg transition-all">
-                Eliminar
+                Eliminar tarjeta
               </button>
             ) : (
               <button onClick={onDelete}
@@ -208,16 +255,21 @@ export function CardModal({ card, onSave, onDelete, onClose }: Props) {
             <button onClick={onClose}
               className="py-3 px-6 rounded-lg bg-white/10 text-white/70 font-semibold text-[16px]
                          hover:bg-white/15 hover:text-white transition-all">
-              Cancelar
-            </button>
-            <button onClick={handleSave}
-              className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold text-[16px]
-                         hover:bg-blue-500 transition-all active:scale-[0.98] shadow-md">
-              Guardar
+              Cerrar
             </button>
           </div>
         </div>
       </div>
+
+      {/* Alert de confirmacion */}
+      {confirmMsg && confirmAction && (
+        <ConfirmAlert
+          message={confirmMsg}
+          dark
+          onConfirm={() => { confirmAction(); setConfirmMsg(''); setConfirmAction(null) }}
+          onCancel={() => { setConfirmMsg(''); setConfirmAction(null) }}
+        />
+      )}
 
       <style>{`
         @keyframes slideIn {
