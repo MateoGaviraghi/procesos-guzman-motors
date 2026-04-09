@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { Card, ColumnStatus, Responsible, PdfAttachment } from '../lib/types'
 import { KANBAN_STATUSES } from '../lib/types'
 import { toInputDate, formatDate } from '../lib/dateUtils'
@@ -35,6 +35,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
   const [showContactPicker, setShowContactPicker] = useState(false)
   const [showQuotePicker, setShowQuotePicker] = useState(false)
   const [isDraggingPdf, setIsDraggingPdf] = useState(false)
+  const dragCounter = useRef(0)
 
   const color = columnColor[card.column_status]
   const isKanban = KANBAN_STATUSES.includes(card.column_status)
@@ -84,9 +85,10 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
       <div className="relative w-full max-w-[45vw] h-full bg-[#1a1a2e] text-white
                       shadow-[-8px_0_30px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col animate-[slideIn_0.2s_ease-out]"
         onClick={e => e.stopPropagation()}
-        onDragOver={e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); setIsDraggingPdf(true) } }}
-        onDragLeave={() => setIsDraggingPdf(false)}
-        onDrop={handleDrop}>
+        onDragEnter={e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); dragCounter.current++; setIsDraggingPdf(true) } }}
+        onDragOver={e => { if (e.dataTransfer.types.includes('Files')) e.preventDefault() }}
+        onDragLeave={() => { dragCounter.current--; if (dragCounter.current <= 0) { dragCounter.current = 0; setIsDraggingPdf(false) } }}
+        onDrop={e => { dragCounter.current = 0; handleDrop(e) }}>
 
         <div className="h-1 shrink-0" style={{ backgroundColor: color }} />
 

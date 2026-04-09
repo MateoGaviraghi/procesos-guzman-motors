@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Draggable } from '@hello-pangea/dnd'
 import type { Card as CardType, ColumnStatus, Responsible, PdfAttachment } from '../lib/types'
@@ -22,28 +22,24 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
   const [editingQuoteDate, setEditingQuoteDate] = useState(false)
   const [showResponsibleMenu, setShowResponsibleMenu] = useState(false)
   const [isDroppingPdf, setIsDroppingPdf] = useState(false)
+  const dragCount = useRef(0)
 
   const products = card.product || []
   const pdfs = card.pdf_url || []
   const firstProduct = products[0] || ''
   const extraProducts = products.length > 1 ? ` (+${products.length - 1})` : ''
 
-  const handleDragOver = (e: React.DragEvent) => {
-    if (e.dataTransfer.types.includes('Files')) {
-      e.preventDefault()
-      e.stopPropagation()
-      setIsDroppingPdf(true)
-    }
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); e.stopPropagation(); dragCount.current++; setIsDroppingPdf(true) }
   }
-  const handleDragLeave = () => setIsDroppingPdf(false)
+  const handleDragOver = (e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); e.stopPropagation() }
+  }
+  const handleDragLeave = () => { dragCount.current--; if (dragCount.current <= 0) { dragCount.current = 0; setIsDroppingPdf(false) } }
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDroppingPdf(false)
+    e.preventDefault(); e.stopPropagation(); dragCount.current = 0; setIsDroppingPdf(false)
     const file = e.dataTransfer.files[0]
-    if (file && file.type === 'application/pdf') {
-      onPdfDrop(card.id, file)
-    }
+    if (file && file.type === 'application/pdf') onPdfDrop(card.id, file)
   }
 
   return (
@@ -54,6 +50,7 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={onClick}
+          onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
