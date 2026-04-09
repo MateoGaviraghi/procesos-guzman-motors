@@ -182,7 +182,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
               <div className="relative">
                 <button type="button" onClick={() => setShowContactPicker(true)}
                   className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left transition-all hover:bg-white/15">
-                  <span className={contactDate ? 'text-white' : 'text-white/30'}>{contactDate ? formatDate(contactDate) : 'Seleccionar'}</span>
+                  <span className={contactDate ? 'text-white' : 'text-white/30'}>{contactDate ? formatDate(contactDate) : 'dd/mm/aaaa'}</span>
                 </button>
                 {contactDate && <ClearBtn onConfirm={() => { setContactDate(''); saveField({ contact_date: null }) }} dark />}
                 {showContactPicker && (
@@ -197,7 +197,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
               <div className="relative">
                 <button type="button" onClick={() => setShowQuotePicker(true)}
                   className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left transition-all hover:bg-white/15">
-                  <span className={quoteDate ? 'text-white' : 'text-white/30'}>{quoteDate ? formatDate(quoteDate) : 'Seleccionar'}</span>
+                  <span className={quoteDate ? 'text-white' : 'text-white/30'}>{quoteDate ? formatDate(quoteDate) : 'dd/mm/aaaa'}</span>
                 </button>
                 {quoteDate && <ClearBtn onConfirm={() => { setQuoteDate(''); saveField({ quote_date: null }) }} dark />}
                 {showQuotePicker && (

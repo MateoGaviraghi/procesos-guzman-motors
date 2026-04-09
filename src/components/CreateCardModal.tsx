@@ -133,7 +133,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
             <div className="relative">
               <button type="button" onClick={() => setShowDatePicker(true)}
                 className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left transition-all hover:bg-white/15">
-                <span className={contactDate ? 'text-white' : 'text-white/30'}>{contactDate ? formatDate(contactDate) : 'Seleccionar'}</span>
+                <span className={contactDate ? 'text-white' : 'text-white/30'}>{contactDate ? formatDate(contactDate) : 'dd/mm/aaaa'}</span>
               </button>
               {contactDate && <ClearBtn onConfirm={() => setContactDate('')} dark />}
               {showDatePicker && (
