@@ -1,18 +1,25 @@
-export type ColumnStatus = 'contactar' | 'cotizar' | 'seguimiento' | 'remate'
+export type ColumnStatus = 'contactar' | 'cotizar' | 'seguimiento' | 'remate' | 'vendido' | 'baja'
+
+export const KANBAN_STATUSES: ColumnStatus[] = ['contactar', 'cotizar', 'seguimiento', 'remate']
 
 export type Responsible = 'Hector' | 'Victor' | ''
+
+export interface PdfAttachment {
+  name: string
+  url: string
+}
 
 export interface Card {
   id: string
   name: string
   phone: string
-  product: string
+  product: string[]
   responsible: Responsible
   column_status: ColumnStatus
   contact_date: string | null
   quote_date: string | null
   note: string
-  pdf_url: string | null
+  pdf_url: PdfAttachment[]
   position: number
   created_at: string
   updated_at: string

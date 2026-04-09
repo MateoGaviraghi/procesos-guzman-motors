@@ -11,17 +11,19 @@ interface Props {
   onMoveCard: (cardId: string, newColumn: ColumnStatus, newIndex: number) => void
   onDragToSeguimiento: (cardId: string, newIndex: number) => void
   onQuickUpdate: (id: string, updates: Partial<CardType>) => void
+  onPdfDrop: (cardId: string, file: File) => void
 }
 
-export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento, onQuickUpdate }: Props) {
-  const mainCards = cards.filter(c => isWithinOneMonth(c.contact_date))
+export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento, onQuickUpdate, onPdfDrop }: Props) {
+  const mainCards = cards.filter(c =>
+    isWithinOneMonth(c.contact_date) &&
+    c.column_status !== 'vendido' &&
+    c.column_status !== 'baja'
+  )
 
   const getColumnCards = (columnId: ColumnStatus) => {
-    const sorter = (columnId === 'contactar' || columnId === 'cotizar')
-      ? sortByDateWithExpired : sortByDate
-    return mainCards
-      .filter(c => c.column_status === columnId)
-      .sort((a, b) => sorter(a.contact_date, b.contact_date))
+    const sorter = (columnId === 'contactar' || columnId === 'cotizar') ? sortByDateWithExpired : sortByDate
+    return mainCards.filter(c => c.column_status === columnId).sort((a, b) => sorter(a.contact_date, b.contact_date))
   }
 
   const handleDragEnd = (result: DropResult) => {
@@ -41,19 +43,10 @@ export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSegu
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex h-full">
         {COLUMNS.map(col => (
-          <Column
-            key={col.id}
-            id={col.id}
-            title={col.title}
-            accent={col.accent}
-            accentBorder={col.accentBorder}
-            headerBg={col.headerBg}
-            hex={col.hex}
-            cards={getColumnCards(col.id)}
-            onCardClick={onCardClick}
-            onAddClick={() => onAddClick(col.id)}
-            onQuickUpdate={onQuickUpdate}
-          />
+          <Column key={col.id} id={col.id} title={col.title} accent={col.accent}
+            accentBorder={col.accentBorder} headerBg={col.headerBg} hex={col.hex}
+            cards={getColumnCards(col.id)} onCardClick={onCardClick}
+            onAddClick={() => onAddClick(col.id)} onQuickUpdate={onQuickUpdate} onPdfDrop={onPdfDrop} />
         ))}
       </div>
     </DragDropContext>

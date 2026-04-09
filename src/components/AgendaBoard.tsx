@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function AgendaBoard({ cards, onCardClick }: Props) {
-  const agendaCards = cards.filter(c => c.contact_date && isMoreThanOneMonth(c.contact_date))
+  const agendaCards = cards.filter(c => c.contact_date && isMoreThanOneMonth(c.contact_date) && c.column_status !== 'vendido' && c.column_status !== 'baja')
   const months = getNextMonths(12)
 
   const getMonthCards = (monthDate: Date) => {
@@ -50,7 +50,7 @@ export function AgendaBoard({ cards, onCardClick }: Props) {
                              hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] transition-all duration-150"
                 >
                   <p className="text-[16px] font-bold text-slate-900 truncate">{card.name}</p>
-                  <p className="text-[14px] text-slate-500 truncate mt-0.5">{card.product}</p>
+                  <p className="text-[14px] text-slate-500 truncate mt-0.5">{(card.product || [])[0] || ''}</p>
                   <p className="text-[14px] text-slate-500 font-semibold text-right mt-1">
                     {formatDate(card.contact_date)}
                   </p>
