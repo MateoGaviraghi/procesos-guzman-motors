@@ -78,7 +78,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
 
           {/* Responsable */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Responsable</label>
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Responsable</label>
             <div className="flex gap-2">
               {([{ value: 'Hector' as Responsible, label: 'Hector' }, { value: 'Victor' as Responsible, label: 'Victor' }, { value: '' as Responsible, label: 'Sin asignar' }]).map(r => (
                 <button key={r.label} type="button" onClick={() => setResponsible(r.value)}
@@ -92,7 +92,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
 
           {/* Telefono */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Telefono</label>
             <div className="relative">
               <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
                 className={inputClass} placeholder="Numero de telefono" />
@@ -102,7 +102,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
 
           {/* Productos */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Productos</label>
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Productos</label>
             <div className="space-y-2">
               {products.map((p, i) => (
                 <div key={i} className="flex gap-2">
@@ -127,7 +127,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
 
           {/* Fecha contacto */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">
               Fecha contacto <span className="normal-case tracking-normal text-white/30">(opcional)</span>
             </label>
             <div className="relative">
@@ -146,7 +146,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
 
           {/* Nota */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">
               Nota <span className="normal-case tracking-normal text-white/30">(opcional)</span>
             </label>
             <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}

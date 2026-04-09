@@ -129,7 +129,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
 
           {/* Responsable - 3 opciones */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Responsable</label>
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Responsable</label>
             <div className="flex gap-2">
               {([{ value: 'Hector' as Responsible, label: 'Hector' }, { value: 'Victor' as Responsible, label: 'Victor' }, { value: '' as Responsible, label: 'Sin asignar' }]).map(r => (
                 <button key={r.label} type="button"
@@ -144,7 +144,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
 
           {/* Telefono */}
           <div>
-            <label htmlFor="edit-phone" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Telefono</label>
+            <label htmlFor="edit-phone" className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Telefono</label>
             <div className="relative">
               <input id="edit-phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)}
                 onBlur={() => handleBlur('phone', phone, card.phone)} className={inputClass} placeholder="Numero de telefono" />
@@ -154,7 +154,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
 
           {/* Productos - multi */}
           <div>
-            <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Productos</label>
+            <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Productos</label>
             <div className="space-y-2">
               {products.map((p, i) => (
                 <div key={i} className="flex gap-2">
@@ -178,7 +178,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
           {/* Fechas */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Fecha contacto</label>
+              <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Fecha contacto</label>
               <div className="relative">
                 <button type="button" onClick={() => setShowContactPicker(true)}
                   className="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-[16px] text-left transition-all hover:bg-white/15">
@@ -212,7 +212,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
           {/* PDFs */}
           {pdfs.length > 0 && (
             <div>
-              <label className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Archivos PDF</label>
+              <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Archivos PDF</label>
               <div className="space-y-1.5">
                 {pdfs.map((pdf, i) => (
                   <div key={i} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
@@ -245,7 +245,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
 
           {/* Nota */}
           <div>
-            <label htmlFor="edit-note" className="block text-[14px] font-semibold text-white/50 mb-2 uppercase tracking-wider">Nota</label>
+            <label htmlFor="edit-note" className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Nota</label>
             <div className="relative">
               <textarea id="edit-note" value={note} onChange={e => setNote(e.target.value)}
                 onBlur={() => { if (note.trim() !== card.note.trim()) saveField({ note: note.trim() }) }}
