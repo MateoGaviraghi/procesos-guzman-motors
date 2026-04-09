@@ -21,6 +21,7 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
   const [editingDate, setEditingDate] = useState(false)
   const [editingQuoteDate, setEditingQuoteDate] = useState(false)
   const [showResponsibleMenu, setShowResponsibleMenu] = useState(false)
+  const [showPdfMenu, setShowPdfMenu] = useState(false)
   const [isDroppingPdf, setIsDroppingPdf] = useState(false)
   const dragCount = useRef(0)
 
@@ -87,12 +88,41 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
           <div className="flex items-center justify-between mt-1">
             <span className="text-[16px] text-slate-600">{card.phone}</span>
             <div className="flex items-center gap-1.5 shrink-0">
-              {pdfs.length > 0 && (
+              {pdfs.length === 1 && (
                 <a href={pdfs[0].url} target="_blank" rel="noopener noreferrer"
                   onClick={e => e.stopPropagation()}
                   className="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold border border-orange-200 hover:bg-orange-200 transition-all">
-                  {pdfs.length === 1 ? 'PDF' : `${pdfs.length} PDFs`}
+                  PDF
                 </a>
+              )}
+              {pdfs.length > 1 && (
+                <div className="relative">
+                  <button onClick={e => { e.stopPropagation(); setShowPdfMenu(!showPdfMenu) }}
+                    className="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold border border-orange-200 hover:bg-orange-200 transition-all">
+                    {pdfs.length} PDFs
+                  </button>
+                  {showPdfMenu && createPortal(
+                    <>
+                      <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={e => { e.stopPropagation(); setShowPdfMenu(false) }} />
+                      <div style={{ zIndex: 9999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                        className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-slate-200 py-2 w-[280px]"
+                        onClick={e => e.stopPropagation()}>
+                        <p className="px-4 py-1.5 text-[13px] font-semibold text-slate-400 uppercase tracking-wider">Archivos PDF</p>
+                        {pdfs.map((pdf, i) => (
+                          <a key={i} href={pdf.url} target="_blank" rel="noopener noreferrer"
+                            onClick={e => { e.stopPropagation(); setShowPdfMenu(false) }}
+                            className="flex items-center gap-2 px-4 py-2.5 text-[16px] text-slate-700 hover:bg-slate-50 transition-all">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-orange-500 shrink-0">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
+                            </svg>
+                            <span className="truncate">{pdf.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </>,
+                    document.body
+                  )}
+                </div>
               )}
               {/* Responsable dropdown */}
               <div className="relative">
