@@ -136,21 +136,27 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
                   <>
                     <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={e => { e.stopPropagation(); setShowResponsibleMenu(false) }} />
                     <div style={{ zIndex: 9999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                      className="bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-slate-200 py-2 w-[200px]"
+                      className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-slate-200 w-[280px] overflow-hidden"
                       onClick={e => e.stopPropagation()}>
-                      <p className="px-4 py-1 text-[13px] font-semibold text-slate-400 uppercase tracking-wider">Responsable</p>
-                      {(['Hector', 'Victor', ''] as Responsible[]).map(r => (
-                        <button key={r || 'none'} onClick={e => {
-                          e.stopPropagation()
-                          onQuickUpdate(card.id, { responsible: r })
-                          setShowResponsibleMenu(false)
-                        }}
-                          className={`w-full text-left px-4 py-2.5 text-[17px] transition-all
-                            ${card.responsible === r ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50'}`}>
-                          {r || 'Sin asignar'}
-                          {card.responsible === r && <span className="float-right text-blue-500">✓</span>}
-                        </button>
-                      ))}
+                      <p className="px-5 pt-4 pb-2 text-[15px] font-bold text-slate-800">Elegir responsable</p>
+                      <div className="px-3 pb-3 space-y-1.5">
+                        {([{ value: 'Hector' as Responsible, label: 'Hector', color: 'bg-blue-600' },
+                           { value: 'Victor' as Responsible, label: 'Victor', color: 'bg-amber-500' },
+                           { value: '' as Responsible, label: 'Sin asignar', color: 'bg-slate-400' }]).map(r => (
+                          <button key={r.label} onClick={e => {
+                            e.stopPropagation()
+                            onQuickUpdate(card.id, { responsible: r.value })
+                            setShowResponsibleMenu(false)
+                          }}
+                            className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[18px] font-semibold transition-all
+                              ${card.responsible === r.value
+                                ? `${r.color} text-white shadow-md`
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+                            {r.label}
+                            {card.responsible === r.value && <span className="ml-auto text-[20px]">✓</span>}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </>,
                   document.body
