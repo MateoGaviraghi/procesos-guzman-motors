@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Draggable } from '@hello-pangea/dnd'
-import type { Card as CardType, ColumnStatus, Responsible, PdfAttachment } from '../lib/types'
+import type { Card as CardType, ColumnStatus, Responsible } from '../lib/types'
 import { formatDate, isExpired } from '../lib/dateUtils'
 import { DatePickerField } from './DatePickerField'
 
