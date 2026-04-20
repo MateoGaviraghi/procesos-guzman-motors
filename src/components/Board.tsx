@@ -41,7 +41,7 @@ export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSegu
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex h-full">
+      <div className="flex h-full board-columns">
         {COLUMNS.map(col => (
           <Column key={col.id} id={col.id} title={col.title} accent={col.accent}
             accentBorder={col.accentBorder} headerBg={col.headerBg} hex={col.hex}

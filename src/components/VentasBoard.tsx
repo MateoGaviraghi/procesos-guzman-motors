@@ -28,7 +28,7 @@ export function VentasBoard({ cards, onCardClick }: Props) {
         const label = formatMonthYear(month)
         return (
           <div key={month.toISOString()}
-            className="flex flex-col min-w-[230px] w-[230px] shrink-0 h-full border-r border-slate-300 last:border-r-0 border-t-[3px] border-t-emerald-500">
+            className="flex flex-col min-w-[75vw] sm:min-w-[230px] w-[75vw] sm:w-[230px] shrink-0 h-full border-r border-slate-300 last:border-r-0 border-t-[3px] border-t-emerald-500">
             <div className="px-4 py-3 bg-emerald-50 border-b border-slate-300 flex items-center gap-2.5">
               <h2 className="text-[18px] font-bold text-slate-800 capitalize">{label}</h2>
               {monthCards.length > 0 && (

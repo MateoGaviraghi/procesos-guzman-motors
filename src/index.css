@@ -34,3 +34,24 @@ body {
 .modal-enter {
   animation: modalIn 0.2s ease-out;
 }
+
+/* Touch friendly */
+@media (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+}
+
+/* Mobile scroll horizontal para boards */
+@media (max-width: 768px) {
+  .board-columns {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .board-columns > * {
+    scroll-snap-align: start;
+    min-width: 85vw;
+    flex-shrink: 0;
+  }
+}

@@ -47,14 +47,14 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/25" onClick={onClose} />
-      <div className="relative w-full max-w-[45vw] h-full bg-[#1a1a2e] text-white
+      <div className="relative w-full max-w-full sm:max-w-[85vw] md:max-w-[60vw] lg:max-w-[45vw] h-full bg-[#1a1a2e] text-white
                       shadow-[-8px_0_30px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col animate-[slideIn_0.2s_ease-out]"
         onClick={e => e.stopPropagation()}>
 
         <div className="h-1 shrink-0" style={{ backgroundColor: color }} />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-7 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-4 sm:px-7 py-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             <span className="text-[14px] font-semibold px-3 py-1 rounded-md"
               style={{ backgroundColor: color + '20', color }}>Nueva tarjeta</span>
@@ -67,14 +67,14 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
         </div>
 
         {/* Nombre */}
-        <div className="px-7 pt-6 pb-2">
+        <div className="px-4 sm:px-7 pt-6 pb-2">
           <input type="text" value={name} onChange={e => setName(e.target.value)}
             placeholder="Nombre del cliente" autoFocus
             className="w-full text-[26px] font-bold text-white bg-transparent border-0 border-b-2 border-white/20
                        focus:border-b-blue-400 focus:outline-none px-0 py-1 transition-all placeholder:text-white/30" />
         </div>
 
-        <div className="px-7 py-4 flex-1 space-y-4">
+        <div className="px-4 sm:px-7 py-4 flex-1 space-y-4">
 
           {/* Responsable */}
           <div>
@@ -157,7 +157,7 @@ export function CreateCardModal({ column, onSave, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-7 py-4 shrink-0">
+        <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-4 sm:px-7 py-4 shrink-0">
           <div className="flex gap-3">
             <button onClick={onClose}
               className="flex-1 py-3.5 rounded-lg bg-white/10 text-white/70 font-semibold text-[17px] hover:bg-white/15 hover:text-white transition-all">

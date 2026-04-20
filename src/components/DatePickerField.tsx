@@ -71,7 +71,7 @@ export function DatePickerField({ value, onChange, onClose }: Props) {
       {/* Calendario centrado */}
       <div onClick={e => e.stopPropagation()}
         style={{ zIndex: 9999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-        className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.3)] border border-slate-200 w-[340px] overflow-hidden">
+        className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.3)] border border-slate-200 w-[calc(100vw-32px)] max-w-[340px] overflow-hidden">
 
         {/* Input manual */}
         <div className="flex items-center gap-2 px-4 pt-4 pb-2">

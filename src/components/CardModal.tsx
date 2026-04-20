@@ -82,7 +82,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/25" onClick={onClose} />
-      <div className="relative w-full max-w-[45vw] h-full bg-[#1a1a2e] text-white
+      <div className="relative w-full max-w-full sm:max-w-[85vw] md:max-w-[60vw] lg:max-w-[45vw] h-full bg-[#1a1a2e] text-white
                       shadow-[-8px_0_30px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col animate-[slideIn_0.2s_ease-out]"
         onClick={e => e.stopPropagation()}
         onDragEnter={e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); dragCounter.current++; setIsDraggingPdf(true) } }}
@@ -93,7 +93,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
         <div className="h-1 shrink-0" style={{ backgroundColor: color }} />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-7 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-4 sm:px-7 py-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             <span className="text-[14px] font-semibold px-3 py-1 rounded-md"
               style={{ backgroundColor: color + '20', color }}>{columnLabel[card.column_status]}</span>
@@ -118,14 +118,14 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
         )}
 
         {/* Nombre */}
-        <div className="px-7 pt-6 pb-2">
+        <div className="px-4 sm:px-7 pt-6 pb-2">
           <input type="text" value={name} onChange={e => setName(e.target.value)}
             onBlur={() => handleBlur('name', name, card.name)} placeholder="Nombre del cliente" aria-label="Nombre"
             className="w-full text-[26px] font-bold text-white bg-transparent border-0 border-b-2 border-transparent
                        focus:border-b-blue-400 focus:outline-none px-0 py-1 transition-all placeholder:text-white/30" />
         </div>
 
-        <div className="px-7 py-4 flex-1 space-y-4">
+        <div className="px-4 sm:px-7 py-4 flex-1 space-y-4">
 
           {/* Responsable - 3 opciones */}
           <div>
@@ -176,7 +176,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
           </div>
 
           {/* Fechas */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-[15px] font-bold text-white mb-2 uppercase tracking-wider">Fecha contacto</label>
               <div className="relative">
@@ -258,7 +258,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
 
           {/* Vendido / Dar de baja - solo si esta en kanban */}
           {isKanban && (
-            <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button onClick={() => saveField({ column_status: 'vendido' })}
                 className="py-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[18px] transition-all active:scale-[0.98] shadow-md">
                 Vendido
@@ -280,7 +280,7 @@ export function CardModal({ card, onSave, onDelete, onClose, onUploadPdf }: Prop
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-7 py-4 shrink-0">
+        <div className="sticky bottom-0 bg-[#1a1a2e] border-t border-white/10 px-4 sm:px-7 py-4 shrink-0">
           <div className="flex items-center gap-3">
             {!confirmDelete ? (
               <button onClick={() => setConfirmDelete(true)}
