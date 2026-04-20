@@ -14,9 +14,10 @@ interface Props {
   onAddClick: () => void
   onQuickUpdate: (id: string, updates: Partial<CardType>) => void
   onPdfDrop: (cardId: string, file: File) => void
+  onMoveToColumn: (cardId: string, column: import('../lib/types').ColumnStatus) => void
 }
 
-export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, onCardClick, onAddClick, onQuickUpdate, onPdfDrop }: Props) {
+export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, onCardClick, onAddClick, onQuickUpdate, onPdfDrop, onMoveToColumn }: Props) {
   return (
     <div className={`flex flex-col min-w-0 flex-1 h-full border-r border-slate-300 last:border-r-0 border-t-[3px] ${accentBorder}`}>
       <div className={`flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 ${headerBg} border-b border-slate-300`}>
@@ -38,7 +39,7 @@ export function Column({ id, title, accent, accentBorder, headerBg, hex, cards, 
               ${snapshot.isDraggingOver ? 'bg-blue-50/60' : 'bg-slate-100/80'}`}>
             {cards.map((card, index) => (
               <Card key={card.id} card={card} index={index} accentColor={hex}
-                onClick={() => onCardClick(card)} onQuickUpdate={onQuickUpdate} onPdfDrop={onPdfDrop} />
+                onClick={() => onCardClick(card)} onQuickUpdate={onQuickUpdate} onPdfDrop={onPdfDrop} onMoveToColumn={onMoveToColumn} />
             ))}
             {provided.placeholder}
           </div>

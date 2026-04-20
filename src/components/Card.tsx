@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Draggable } from '@hello-pangea/dnd'
 import type { Card as CardType, ColumnStatus, Responsible } from '../lib/types'
+import { COLUMNS } from '../lib/types'
 import { formatDate, isExpired } from '../lib/dateUtils'
 import { DatePickerField } from './DatePickerField'
 
@@ -12,16 +13,18 @@ interface Props {
   onClick: () => void
   onQuickUpdate: (id: string, updates: Partial<CardType>) => void
   onPdfDrop: (cardId: string, file: File) => void
+  onMoveToColumn: (cardId: string, column: ColumnStatus) => void
 }
 
 const expirableColumns: ColumnStatus[] = ['contactar', 'cotizar']
 
-export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDrop }: Props) {
+export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDrop, onMoveToColumn }: Props) {
   const expired = expirableColumns.includes(card.column_status) && isExpired(card.contact_date)
   const [editingDate, setEditingDate] = useState(false)
   const [editingQuoteDate, setEditingQuoteDate] = useState(false)
   const [showResponsibleMenu, setShowResponsibleMenu] = useState(false)
   const [showPdfMenu, setShowPdfMenu] = useState(false)
+  const [showMoveMenu, setShowMoveMenu] = useState(false)
   const [isDroppingPdf, setIsDroppingPdf] = useState(false)
   const dragCount = useRef(0)
 
@@ -201,6 +204,42 @@ export function Card({ card, index, accentColor, onClick, onQuickUpdate, onPdfDr
               )}
             </div>
           )}
+
+          {/* Boton mover a otra columna */}
+          <div className="flex justify-end mt-1.5 relative">
+            <button onClick={e => { e.stopPropagation(); setShowMoveMenu(true) }}
+              className="text-[12px] text-slate-400 hover:text-blue-500 font-semibold transition-all flex items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              Mover
+            </button>
+            {showMoveMenu && createPortal(
+              <>
+                <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={e => { e.stopPropagation(); setShowMoveMenu(false) }} />
+                <div style={{ zIndex: 9999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                  className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-slate-200 w-[280px] overflow-hidden"
+                  onClick={e => e.stopPropagation()}>
+                  <p className="px-5 pt-4 pb-2 text-[15px] font-bold text-slate-800">Mover a</p>
+                  <div className="px-3 pb-3 space-y-1.5">
+                    {COLUMNS.filter(c => c.id !== card.column_status).map(col => (
+                      <button key={col.id} onClick={e => {
+                        e.stopPropagation()
+                        onMoveToColumn(card.id, col.id)
+                        setShowMoveMenu(false)
+                      }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[17px] font-semibold
+                                   bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+                        <span className={`w-3 h-3 rounded-full ${col.accent}`} />
+                        {col.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>,
+              document.body
+            )}
+          </div>
         </div>
       )}
     </Draggable>

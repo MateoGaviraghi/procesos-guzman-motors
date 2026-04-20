@@ -12,9 +12,10 @@ interface Props {
   onDragToSeguimiento: (cardId: string, newIndex: number) => void
   onQuickUpdate: (id: string, updates: Partial<CardType>) => void
   onPdfDrop: (cardId: string, file: File) => void
+  onMoveToColumn: (cardId: string, column: ColumnStatus) => void
 }
 
-export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento, onQuickUpdate, onPdfDrop }: Props) {
+export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSeguimiento, onQuickUpdate, onPdfDrop, onMoveToColumn }: Props) {
   const mainCards = cards.filter(c =>
     isWithinOneMonth(c.contact_date) &&
     c.column_status !== 'vendido' &&
@@ -46,7 +47,7 @@ export function Board({ cards, onCardClick, onAddClick, onMoveCard, onDragToSegu
           <Column key={col.id} id={col.id} title={col.title} accent={col.accent}
             accentBorder={col.accentBorder} headerBg={col.headerBg} hex={col.hex}
             cards={getColumnCards(col.id)} onCardClick={onCardClick}
-            onAddClick={() => onAddClick(col.id)} onQuickUpdate={onQuickUpdate} onPdfDrop={onPdfDrop} />
+            onAddClick={() => onAddClick(col.id)} onQuickUpdate={onQuickUpdate} onPdfDrop={onPdfDrop} onMoveToColumn={onMoveToColumn} />
         ))}
       </div>
     </DragDropContext>

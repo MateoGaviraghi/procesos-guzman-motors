@@ -106,7 +106,15 @@ export default function App() {
         {view === 'main' && (
           <Board cards={cards} onCardClick={handleCardClick} onAddClick={handleAddClick}
             onMoveCard={moveCard} onDragToSeguimiento={handleDragToSeguimiento}
-            onQuickUpdate={(id, updates) => updateCard(id, updates)} onPdfDrop={handlePdfDrop} />
+            onQuickUpdate={(id, updates) => updateCard(id, updates)} onPdfDrop={handlePdfDrop}
+            onMoveToColumn={(id, col) => {
+              const c = cards.find(x => x.id === id)
+              if (c?.column_status === 'cotizar' && col === 'seguimiento') {
+                setQuotePending({ cardId: id, newIndex: 0 })
+              } else {
+                moveCard(id, col, 0)
+              }
+            }} />
         )}
         {view === 'agenda' && <AgendaBoard cards={cards} onCardClick={handleCardClick} />}
         {view === 'ventas' && <VentasBoard cards={cards} onCardClick={handleCardClick} />}
